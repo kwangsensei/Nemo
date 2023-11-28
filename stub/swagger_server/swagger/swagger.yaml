@@ -1,0 +1,225 @@
+openapi: 3.0.0
+info:
+  title: Air Pollution In Various Height API
+  description: This API provides comparison of average air pollution between differrent
+    height. Raw data provided by Thai Meteorological Department (TMD).
+  version: 3.0.0
+servers:
+- url: http://127.0.0.1:8080/air_pollution_height/
+paths:
+  /heights:
+    get:
+      summary: Returns a list of heights.
+      operationId: controller_get_height
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Height'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /heights/{heightId}:
+    get:
+      summary: Returns complete details of the specified height
+      operationId: controller_get_height_details
+      parameters:
+      - name: heightId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Height'
+          links:
+            pm:
+              operationId: controller.get_pms_in_height
+              parameters:
+                heightId: $response.body#/heightId
+            co:
+              operationId: controller.get_cos_in_height
+              parameters:
+                heightId: $response.body#/heightId
+            smoke:
+              operationId: controller.get_smokes_in_height
+              parameters:
+                heightId: $response.body#/heightId
+            dust_api:
+              operationId: controller.get_dust_api_in_height
+              parameters:
+                heightId: $response.body#/heightId
+            temp_api:
+              operationId: controller.get_temp_api_in_height
+              parameters:
+                heightId: $response.body#/heightId
+            avgPM:
+              operationId: controller.get_height_pm_average
+              parameters:
+                heightId: $response.body#/heightId
+            avgCO:
+              operationId: controller.get_height_co_average
+              parameters:
+                heightId: $response.body#/heightId
+            avgSmoke:
+              operationId: controller.get_height_smoke_average
+              parameters:
+                heightId: $response.body#/heightId
+            avgPM_API:
+              operationId: controller.get_height_pm_api_average
+              parameters:
+                heightId: $response.body#/heightId
+            avgTemp_API:
+              operationId: controller.get_height_temp_api_average
+              parameters:
+                heightId: $response.body#/heightId
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /heights/{heightId}/pm:
+    get:
+      summary: Returns a list of collected PMs for specific height.
+      operationId: controller_get_pms_in_height
+      parameters:
+      - name: heightId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: number
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /heights/{heightId}/avgPMS7:
+    get:
+      summary: Returns the average collected PMs for specific height.
+      operationId: controller_get_height_pm_average
+      parameters:
+      - name: heightId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: number
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    Height:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        zone:
+          type: string
+        altitude:
+          type: number
+      example:
+        altitude: 6.02745618307040320615897144307382404804229736328125
+        zone: zone
+        heightId: 0
+    MQ2:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        smoke:
+          type: number
+    MQ9:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        co:
+          type: number
+    PMS7:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        pm10:
+          type: number
+        pm25:
+          type: number
+    DustApi:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        name:
+          type: string
+        pm10:
+          type: number
+        pm25:
+          type: number
+    TempApi:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        temp:
+          type: number
+    AverageMQ2:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        smoke:
+          type: number
+    AverageMQ9:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        co:
+          type: number
+    AveragePMS7:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        pm10:
+          type: number
+        pm25:
+          type: number
+    AverageDustApi:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        name:
+          type: string
+        pm10:
+          type: number
+        pm25:
+          type: number
+    AverageTempApi:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        temp:
+          type: number
+

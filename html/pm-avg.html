@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Average PM10 and PM2.5 of each Height</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
+  <body>
+    <div id="chart" style="width:100%;height:75vh;"></div>
+    <script>
+      async function createChart() {
+        var resp = await fetch('http://localhost:3000/graphql', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({
+            query: `
+              {
+                basin_3: basin(basinId: 3) {
+                  name
+                  avgMonthlyRainfalls {
+                    amount
+                    month
+                  }
+                }
+                basin_5: basin(basinId: 5) {
+                  name
+                  avgMonthlyRainfalls {
+                    amount
+                    month
+                  }
+                }
+                basin_6: basin(basinId: 6) {
+                  name
+                  avgMonthlyRainfalls {
+                    amount
+                    month
+                  }
+                }
+                basin_7: basin(basinId: 7) {
+                  name
+                  avgMonthlyRainfalls {
+                    amount
+                    month
+                  }
+                }
+                basin_14: basin(basinId: 14) {
+                  name
+                  avgMonthlyRainfalls {
+                    amount
+                    month
+                  }
+                }
+              }`
+          })
+        });
+        var json = await resp.json();
+        var table_basin3 = json.data.basin_3;
+        var table_basin5 = json.data.basin_5;
+        var table_basin6 = json.data.basin_6;
+        var table_basin7 = json.data.basin_7;
+        var table_basin14 = json.data.basin_14;
+
+        var basin_3 = {
+          x: table_basin3.avgMonthlyRainfalls.map(row => row.month),
+          y: table_basin3.avgMonthlyRainfalls.map(row => row.amount),
+          type: 'line',
+          name: table_basin3.name,
+        }
+        var basin_5 = {
+          x: table_basin5.avgMonthlyRainfalls.map(row => row.month),
+          y: table_basin5.avgMonthlyRainfalls.map(row => row.amount),
+          type: 'line',
+          name: table_basin5.name,
+        }
+        var basin_6 = {
+          x: table_basin6.avgMonthlyRainfalls.map(row => row.month),
+          y: table_basin6.avgMonthlyRainfalls.map(row => row.amount),
+          type: 'line',
+          name: table_basin6.name,
+        }
+        var basin_7 = {
+          x: table_basin7.avgMonthlyRainfalls.map(row => row.month),
+          y: table_basin7.avgMonthlyRainfalls.map(row => row.amount),
+          type: 'line',
+          name: table_basin7.name,
+        }
+        var basin_14 = {
+          x: table_basin14.avgMonthlyRainfalls.map(row => row.month),
+          y: table_basin14.avgMonthlyRainfalls.map(row => row.amount),
+          type: 'line',
+          name: table_basin14.name,
+        }
+
+        var data = [basin_3, basin_5, basin_6, basin_7, basin_14];
+        var layout = {
+          title: 'Average Monthly Rainfalls for all 5 Basin',
+          xaxis: {
+            title: 'Month'
+          },
+          yaxis: {
+            title: 'Monthly Rainfall (mm)',
+            range: [0,500]
+          }
+        };
+        var config = { responsive: true };
+        Plotly.newPlot("chart", data, layout, config);
+      } 
+      createChart();
+    </script>
+  </body>
+</html>
