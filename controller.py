@@ -104,7 +104,7 @@ def get_height_pm_average(height_id):
         cs.execute("""
             SELECT height_id, AVG(pm10) as avg_pm10, AVG(pm25) as avg_pm25
             FROM pms7
-            WHERE height_id = %s
+            WHERE height_id=%s
             GROUP BY height_id
             """, (height_id,))
         result = [models.AveragePMS7(height_id=row[0], pm10=row[1], pm25=row[2]) for row in cs.fetchall()]
@@ -116,7 +116,7 @@ def get_height_co_average(height_id):
         cs.execute("""
             SELECT height_id, AVG(co)
             FROM mq9
-            
+            WHERE height_id=%s
             GROUP BY height_id
             """, [height_id])
         result = [models.AverageMQ9(*row) for row in cs.fetchall()]
@@ -128,6 +128,7 @@ def get_height_smoke_average(height_id):
         cs.execute("""
             SELECT height_id, AVG(smoke)
             FROM mq2
+            WHERE height_id=%s
             GROUP BY height_id
             """, [height_id])
         result = [models.AverageMQ2(*row) for row in cs.fetchall()]
@@ -139,6 +140,7 @@ def get_height_pm_api_average(height_id):
         cs.execute("""
             SELECT height_id, name, AVG(pm10), AVG(pm25)
             FROM dust_api
+            WHERE height_id=%s
             GROUP BY height_id, name
             """, [height_id])
         result = [models.AverageDustApi(*row) for row in cs.fetchall()]
@@ -150,6 +152,7 @@ def get_height_temp_api_average(height_id):
         cs.execute("""
             SELECT height_id, AVG(temp)
             FROM temp_api
+            WHERE height_id=%s
             GROUP BY height_id
             """, [height_id])
         result = [models.AverageTempApi(*row) for row in cs.fetchall()]
