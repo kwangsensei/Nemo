@@ -43,40 +43,24 @@ paths:
               operationId: controller.get_pms_in_height
               parameters:
                 heightId: $response.body#/heightId
-            co:
-              operationId: controller.get_cos_in_height
-              parameters:
-                heightId: $response.body#/heightId
-            smoke:
-              operationId: controller.get_smokes_in_height
-              parameters:
-                heightId: $response.body#/heightId
-            dust_api:
-              operationId: controller.get_dust_api_in_height
-              parameters:
-                heightId: $response.body#/heightId
-            temp_api:
-              operationId: controller.get_temp_api_in_height
-              parameters:
-                heightId: $response.body#/heightId
             avgPM:
               operationId: controller.get_height_pm_average
               parameters:
                 heightId: $response.body#/heightId
-            avgCO:
-              operationId: controller.get_height_co_average
-              parameters:
-                heightId: $response.body#/heightId
-            avgSmoke:
-              operationId: controller.get_height_smoke_average
+            pm_API:
+              operationId: controller.get_pm_api_in_height
               parameters:
                 heightId: $response.body#/heightId
             avgPM_API:
               operationId: controller.get_height_pm_api_average
               parameters:
                 heightId: $response.body#/heightId
-            avgTemp_API:
-              operationId: controller.get_height_temp_api_average
+            avgSmoke:
+              operationId: controller.get_height_smoke_average
+              parameters:
+                heightId: $response.body#/heightId
+            avgCO:
+              operationId: controller.get_height_co_average
               parameters:
                 heightId: $response.body#/heightId
   /heights/{heightId}/pm:
@@ -95,8 +79,10 @@ paths:
           content:
             application/json:
               schema:
-                type: number
-  /heights/{heightId}/avgPMS7:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PMS7'
+  /heights/{heightId}/avgPM:
     parameters:
     - name: heightId
       in: path
@@ -112,7 +98,85 @@ paths:
           content:
             application/json:
               schema:
-                type: number
+                type: array
+                items:
+                  $ref: '#/components/schemas/AveragePMS7'
+  /heights/{heightId}/pm_api:
+    parameters:
+    - name: heightId
+      in: path
+      required: true
+      schema:
+        type : integer
+    get:
+      summary: Returns a list of collected PMs from AQI for specific height.
+      operationId: controller.get_pm_api_in_height
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PMAPI'
+  /heights/{heightId}/avgPM_api:
+    parameters:
+    - name: heightId
+      in: path
+      required: true
+      schema:
+        type : integer
+    get:
+      summary: Returns the average collected PMs from AQI for specific height.
+      operationId: controller.get_height_pm_api_average
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AveragePMAPI'
+  /heights/{heightId}/avgSmoke:
+    parameters:
+    - name: heightId
+      in: path
+      required: true
+      schema:
+        type : integer
+    get:
+      summary: Returns the average collected Smoke values for specific height.
+      operationId: controller.get_height_smoke_average
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AverageMQ2'
+  /heights/{heightId}/avgCO:
+    parameters:
+    - name: heightId
+      in: path
+      required: true
+      schema:
+        type : integer
+    get:
+      summary: Returns the average collected CO values for specific height.
+      operationId: controller.get_height_co_average
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AverageMQ9'
 
 components:
   schemas:
@@ -125,20 +189,6 @@ components:
           type: string
         altitude:
           type: number
-    MQ2:
-      type: object
-      properties:
-        heightId:
-          type: integer
-        smoke:
-          type: number
-    MQ9:
-      type: object
-      properties:
-        heightId:
-          type: integer
-        co:
-          type: number
     PMS7:
       type: object
       properties:
@@ -148,7 +198,16 @@ components:
           type: number
         pm25:
           type: number
-    DustApi:
+    AveragePMS7:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        pm10:
+          type: number
+        pm25:
+          type: number
+    PMAPI:
       type: object
       properties:
         heightId:
@@ -159,12 +218,16 @@ components:
           type: number
         pm25:
           type: number
-    TempApi:
+    AveragePMAPI:
       type: object
       properties:
         heightId:
           type: integer
-        temp:
+        name:
+          type: string
+        pm10:
+          type: number
+        pm25:
           type: number
     AverageMQ2:
       type: object
@@ -179,31 +242,4 @@ components:
         heightId:
           type: integer
         co:
-          type: number
-    AveragePMS7:
-      type: object
-      properties:
-        heightId:
-          type: integer
-        pm10:
-          type: number
-        pm25:
-          type: number
-    AverageDustApi:
-      type: object
-      properties:
-        heightId:
-          type: integer
-        name:
-          type: string
-        pm10:
-          type: number
-        pm25:
-          type: number
-    AverageTempApi:
-      type: object
-      properties:
-        heightId:
-          type: integer
-        temp:
           type: number
