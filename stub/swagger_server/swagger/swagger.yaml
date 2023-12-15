@@ -46,40 +46,24 @@ paths:
               operationId: controller.get_pms_in_height
               parameters:
                 heightId: $response.body#/heightId
-            co:
-              operationId: controller.get_cos_in_height
-              parameters:
-                heightId: $response.body#/heightId
-            smoke:
-              operationId: controller.get_smokes_in_height
-              parameters:
-                heightId: $response.body#/heightId
-            dust_api:
-              operationId: controller.get_dust_api_in_height
-              parameters:
-                heightId: $response.body#/heightId
-            temp_api:
-              operationId: controller.get_temp_api_in_height
-              parameters:
-                heightId: $response.body#/heightId
             avgPM:
               operationId: controller.get_height_pm_average
               parameters:
                 heightId: $response.body#/heightId
-            avgCO:
-              operationId: controller.get_height_co_average
-              parameters:
-                heightId: $response.body#/heightId
-            avgSmoke:
-              operationId: controller.get_height_smoke_average
+            pm_API:
+              operationId: controller.get_pm_api_in_height
               parameters:
                 heightId: $response.body#/heightId
             avgPM_API:
               operationId: controller.get_height_pm_api_average
               parameters:
                 heightId: $response.body#/heightId
-            avgTemp_API:
-              operationId: controller.get_height_temp_api_average
+            avgSmoke:
+              operationId: controller.get_height_smoke_average
+              parameters:
+                heightId: $response.body#/heightId
+            avgCO:
+              operationId: controller.get_height_co_average
               parameters:
                 heightId: $response.body#/heightId
       x-openapi-router-controller: swagger_server.controllers.default_controller
@@ -101,10 +85,12 @@ paths:
           content:
             application/json:
               schema:
-                type: number
+                type: array
+                items:
+                  $ref: '#/components/schemas/PMS7'
                 x-content-type: application/json
       x-openapi-router-controller: swagger_server.controllers.default_controller
-  /heights/{heightId}/avgPMS7:
+  /heights/{heightId}/avgPM:
     get:
       summary: Returns the average collected PMs for specific height.
       operationId: controller_get_height_pm_average
@@ -122,7 +108,101 @@ paths:
           content:
             application/json:
               schema:
-                type: number
+                type: array
+                items:
+                  $ref: '#/components/schemas/AveragePMS7'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /heights/{heightId}/pm_api:
+    get:
+      summary: Returns a list of collected PMs from AQI for specific height.
+      operationId: controller_get_pm_api_in_height
+      parameters:
+      - name: heightId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PMAPI'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /heights/{heightId}/avgPM_api:
+    get:
+      summary: Returns the average collected PMs from AQI for specific height.
+      operationId: controller_get_height_pm_api_average
+      parameters:
+      - name: heightId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AveragePMAPI'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /heights/{heightId}/avgSmoke:
+    get:
+      summary: Returns the average collected Smoke values for specific height.
+      operationId: controller_get_height_smoke_average
+      parameters:
+      - name: heightId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AverageMQ2'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /heights/{heightId}/avgCO:
+    get:
+      summary: Returns the average collected CO values for specific height.
+      operationId: controller_get_height_co_average
+      parameters:
+      - name: heightId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AverageMQ9'
                 x-content-type: application/json
       x-openapi-router-controller: swagger_server.controllers.default_controller
 components:
@@ -137,23 +217,9 @@ components:
         altitude:
           type: number
       example:
-        altitude: 6.02745618307040320615897144307382404804229736328125
+        altitude: 6.027456183070403
         zone: zone
         heightId: 0
-    MQ2:
-      type: object
-      properties:
-        heightId:
-          type: integer
-        smoke:
-          type: number
-    MQ9:
-      type: object
-      properties:
-        heightId:
-          type: integer
-        co:
-          type: number
     PMS7:
       type: object
       properties:
@@ -163,38 +229,10 @@ components:
           type: number
         pm25:
           type: number
-    DustApi:
-      type: object
-      properties:
-        heightId:
-          type: integer
-        name:
-          type: string
-        pm10:
-          type: number
-        pm25:
-          type: number
-    TempApi:
-      type: object
-      properties:
-        heightId:
-          type: integer
-        temp:
-          type: number
-    AverageMQ2:
-      type: object
-      properties:
-        heightId:
-          type: integer
-        smoke:
-          type: number
-    AverageMQ9:
-      type: object
-      properties:
-        heightId:
-          type: integer
-        co:
-          type: number
+      example:
+        pm25: 1.4658129805029452
+        pm10: 6.027456183070403
+        heightId: 0
     AveragePMS7:
       type: object
       properties:
@@ -204,7 +242,11 @@ components:
           type: number
         pm25:
           type: number
-    AverageDustApi:
+      example:
+        pm25: 1.4658129805029452
+        pm10: 6.027456183070403
+        heightId: 0
+    PMAPI:
       type: object
       properties:
         heightId:
@@ -215,11 +257,45 @@ components:
           type: number
         pm25:
           type: number
-    AverageTempApi:
+      example:
+        pm25: 1.4658129805029452
+        name: name
+        pm10: 6.027456183070403
+        heightId: 0
+    AveragePMAPI:
       type: object
       properties:
         heightId:
           type: integer
-        temp:
+        name:
+          type: string
+        pm10:
           type: number
+        pm25:
+          type: number
+      example:
+        pm25: 1.4658129805029452
+        name: name
+        pm10: 6.027456183070403
+        heightId: 0
+    AverageMQ2:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        smoke:
+          type: number
+      example:
+        smoke: 6.027456183070403
+        heightId: 0
+    AverageMQ9:
+      type: object
+      properties:
+        heightId:
+          type: integer
+        co:
+          type: number
+      example:
+        heightId: 0
+        co: 6.027456183070403
 

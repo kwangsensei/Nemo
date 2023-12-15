@@ -17,93 +17,79 @@
           },
           body: JSON.stringify({
             query: `
-              {
-                basin_3: basin(basinId: 3) {
-                  name
-                  avgMonthlyRainfalls {
-                    amount
-                    month
-                  }
+            {
+              height_1: height(heightId: 1) {
+                altitude
+                zone
+                avgPM {
+                  pm10
+                  pm25
                 }
-                basin_5: basin(basinId: 5) {
+                avgPMAPI {
                   name
-                  avgMonthlyRainfalls {
-                    amount
-                    month
-                  }
+                  pm10
+                  pm25
                 }
-                basin_6: basin(basinId: 6) {
+              }
+              height_2: height(heightId: 2) {
+                altitude
+                zone
+                avgPM {
+                  pm10
+                  pm25
+                }
+                avgPMAPI {
                   name
-                  avgMonthlyRainfalls {
-                    amount
-                    month
-                  }
+                  pm10
+                  pm25
                 }
-                basin_7: basin(basinId: 7) {
+              }
+              height_3: height(heightId: 3) {
+                altitude
+                zone
+                avgPM {
+                  pm10
+                  pm25
+                }
+                avgPMAPI {
                   name
-                  avgMonthlyRainfalls {
-                    amount
-                    month
-                  }
+                  pm10
+                  pm25
                 }
-                basin_14: basin(basinId: 14) {
-                  name
-                  avgMonthlyRainfalls {
-                    amount
-                    month
-                  }
-                }
-              }`
+              }
+            }`
           })
         });
+
         var json = await resp.json();
-        var table_basin3 = json.data.basin_3;
-        var table_basin5 = json.data.basin_5;
-        var table_basin6 = json.data.basin_6;
-        var table_basin7 = json.data.basin_7;
-        var table_basin14 = json.data.basin_14;
 
-        var basin_3 = {
-          x: table_basin3.avgMonthlyRainfalls.map(row => row.month),
-          y: table_basin3.avgMonthlyRainfalls.map(row => row.amount),
-          type: 'line',
-          name: table_basin3.name,
-        }
-        var basin_5 = {
-          x: table_basin5.avgMonthlyRainfalls.map(row => row.month),
-          y: table_basin5.avgMonthlyRainfalls.map(row => row.amount),
-          type: 'line',
-          name: table_basin5.name,
-        }
-        var basin_6 = {
-          x: table_basin6.avgMonthlyRainfalls.map(row => row.month),
-          y: table_basin6.avgMonthlyRainfalls.map(row => row.amount),
-          type: 'line',
-          name: table_basin6.name,
-        }
-        var basin_7 = {
-          x: table_basin7.avgMonthlyRainfalls.map(row => row.month),
-          y: table_basin7.avgMonthlyRainfalls.map(row => row.amount),
-          type: 'line',
-          name: table_basin7.name,
-        }
-        var basin_14 = {
-          x: table_basin14.avgMonthlyRainfalls.map(row => row.month),
-          y: table_basin14.avgMonthlyRainfalls.map(row => row.amount),
-          type: 'line',
-          name: table_basin14.name,
-        }
+        var createBar = (height, parameter, color) => ({
+          x: [height.avgPM[pm10]],
+          y: [height.avgPM[pm25]],
+          type: 'bar',
+          name: `${parameter} (${height.zone} (H${height.altitude} M))`,
+          marker: { color: color }
+        });
 
-        var data = [basin_3, basin_5, basin_6, basin_7, basin_14];
+        var parameters = ['pm10', 'pm25'];
+
+        var data = parameters.map(parameter => {
+          var height_1 = createBar(json.data.height_1, parameter, 'rgba(31, 119, 180, 0.7)');
+          var height_2 = createBar(json.data.height_2, parameter, 'rgba(255, 127, 14, 0.7)');
+          var height_3 = createBar(json.data.height_3, parameter, 'rgba(44, 160, 44, 0.7)');
+          return [height_1, height_2, height_3];
+        }).flat();
+
         var layout = {
-          title: 'Average Monthly Rainfalls for all 5 Basin',
+          title: 'Average PM2.5 and PM10 compare to AQI API for each Height',
           xaxis: {
-            title: 'Month'
+            title: 'Zone'
           },
           yaxis: {
-            title: 'Monthly Rainfall (mm)',
-            range: [0,500]
-          }
+            title: 'Average PMs (µg/m³)',
+            range: [0, 100]
+          },
+          barmode: 'group'
         };
         var config = { responsive: true };
         Plotly.newPlot("chart", data, layout, config);
